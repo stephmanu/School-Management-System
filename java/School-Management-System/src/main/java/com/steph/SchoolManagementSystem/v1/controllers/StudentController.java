@@ -41,24 +41,19 @@ public class StudentController {
                                     @PathVariable Long studentId, @PathVariable Long courseId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to enrol into course with id " + courseId);
 
         Optional<Student> optionalStudent = studentService.findById(studentId);
         if(optionalStudent.isEmpty()){
             log.info("[ " + requestId + " ] request to enrol into course failed, Student cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Student cannot be found");
         }
 
         Optional<Course> optionalCourse = courseService.findById(courseId);
         if(optionalCourse.isEmpty()){
             log.info("[ " + requestId + " ] request to enrol into course failed, Course cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course cannot be found");
 
         }
@@ -99,8 +94,6 @@ public class StudentController {
         studentService.addEditedStudent(student, requestId);
         courseService.addEditedCourse(course, requestId);
 
-
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to enrol into course with id "
                 + courseId + ", resulted in: " + addEnrollmentResponse);
 
@@ -116,7 +109,6 @@ public class StudentController {
                                               @RequestBody EditStudentModel editStudentModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to edit student details with id " + studentId);
 
         Optional<Student> optionalStudent = studentService.findById(studentId); // find student by id
@@ -124,9 +116,7 @@ public class StudentController {
         //check if optionalStudent is empty, if yes throw exception
         if(optionalStudent.isEmpty()){
             log.info("[ " + requestId + " ] request to edit Student detail failed, Student cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+           
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("student cannot be found");
         }
 
@@ -164,8 +154,6 @@ public class StudentController {
 
         ResponseEntity<?> addEditedStudentResponse = studentService.addEditedStudent(student, requestId);
 
-
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to edit student with id "
                 + studentId + ", resulted in: " + addEditedStudentResponse);
 
