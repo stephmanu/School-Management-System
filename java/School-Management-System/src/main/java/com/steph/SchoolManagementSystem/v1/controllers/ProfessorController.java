@@ -58,7 +58,6 @@ public class ProfessorController {
                                           @RequestBody EditProfessorModel editProfessorModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to edit professor details with id " + professorId);
 
         Optional<Professor> optionalProfessor = professorService.findById(professorId); // find professor by id
@@ -66,9 +65,7 @@ public class ProfessorController {
         //check if optionalProfessor is empty, if yes throw exception
         if(optionalProfessor.isEmpty()){
             log.info("[ " + requestId + " ] request to edit professor detail failed, professor cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Professor cannot be found");
         }
@@ -114,10 +111,6 @@ public class ProfessorController {
 
         ResponseEntity<?> addEditedProfResponse = professorService.addEditedProfessor(professor, requestId);
 
-        ProfessorResponseDto responseDto = null;
-        responseDto = professor.toResponse();
-
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to edit professor with id "
                 + professorId + ", resulted in: " + addEditedProfResponse);
 
@@ -134,7 +127,6 @@ public class ProfessorController {
                                             @PathVariable Long studentId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to edit student with ID"
                         + studentId + "'s grade in course with ID" + courseId);
 
@@ -144,9 +136,7 @@ public class ProfessorController {
         //check if optionalProfessor is empty, if yes throw exception
         if(optionalProfessor.isEmpty()){
             log.info("[ " + requestId + " ] request to edit student grade failed, professor cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Professor cannot be found");
         }
@@ -154,9 +144,7 @@ public class ProfessorController {
         Optional<Course> optionalCourse = courseService.findById(courseId); // find course by id
         if(optionalCourse.isEmpty()){
             log.info("[ " + requestId + " ] request to edit student grade failed, course cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Course cannot be found");
         }
@@ -165,9 +153,7 @@ public class ProfessorController {
         Optional<Student> optionalStudent = studentService.findById(courseId);
         if(optionalStudent.isEmpty()){
             log.info("[ " + requestId + " ] request to edit student grade failed, student cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Student cannot be found");
         }
@@ -208,7 +194,6 @@ public class ProfessorController {
             studentService.addEditedStudent(enrollment.getStudent(), requestId);
         }
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to edit student grade resulted in: "
                 + addEditedEnrollmentResponse);
 
