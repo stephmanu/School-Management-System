@@ -53,7 +53,6 @@ public class AdminController {
                                          @RequestBody AddStudentModel addStudentModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to add student");
 
         //create an instance of student and set the attributes
@@ -74,7 +73,6 @@ public class AdminController {
         log.info(String.valueOf(addStudentResponse));
         return (ResponseEntity<?>)
                 ResponseEntity.status(addStudentResponse.getStatusCode())
-                .contentType(MediaType.valueOf("application/json"))
                 .body(addStudentResponse.getBody());
 
     }
@@ -89,7 +87,6 @@ public class AdminController {
                                           @RequestParam(value = "sortDir", required = false, defaultValue = "desc") String sortDir){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get all students");
 
         // setting up sorting and pagination
@@ -104,8 +101,6 @@ public class AdminController {
 
             log.info("[ " + requestId + " ] request to get all students failed, no student available.");
 
-            status = 404;
-            response.setStatus(status);
             return new ResponseEntity<String>("No student available.",HttpStatus.BAD_REQUEST);
 
         }
@@ -119,14 +114,10 @@ public class AdminController {
         //create a page with students list, size and pagination details
         Page<StudentResponseDto> pagedStudents = new PageImpl<>(students,pageable,students.size());
 
-        response.setStatus(status);
-
         log.info("[ " + requestId + " ] request to get all students is successful");
 
         return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body (isPaged ? pagedStudents : students);
-
     }
 
     // Get one student
@@ -135,7 +126,6 @@ public class AdminController {
                                       @PathVariable Long studentId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get student with ID " + studentId);
 
         //get student from repo using student id provided
@@ -144,9 +134,7 @@ public class AdminController {
         //check if student is empty, if yes throw error
         if (optionalStudent.isEmpty()){
             log.info("[ " + requestId + " ] request to get student failed, student cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return new ResponseEntity<String> ("Student can not be found", HttpStatus.BAD_REQUEST);
 
         }
@@ -154,13 +142,8 @@ public class AdminController {
         //unwrap student from optional
         Student student = optionalStudent.get();
 
-        /*StudentResponseDto responseDto = null;
-        responseDto = student.toResponse();
-*/
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to get student with ID " + studentId + " is successful");
         return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body(student);
 
     }
@@ -171,7 +154,6 @@ public class AdminController {
                                                       @PathVariable Long studentId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to check student's enrollment status");
 
         // find student from repo using student id
@@ -180,9 +162,6 @@ public class AdminController {
         //verify if student exist, if not throw error
         if (optionalStudent.isEmpty()){
             log.info("[ " + requestId + " ] request to get student failed, student cannot be found");
-            status = 400;
-            response.setStatus(status);
-            List<Error> errors = Collections.singletonList(new Error("Student cannot be found"));
             return new ResponseEntity<String> ("Student can not be found", HttpStatus.BAD_REQUEST);
         }
 
@@ -194,7 +173,6 @@ public class AdminController {
         log.info("Is student with ID:" + studentId + " part-time? - " + enrollmentStatus);
 
         return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body("Is student with ID:" + studentId + " part-time? - " + enrollmentStatus);
 
     }
@@ -205,7 +183,6 @@ public class AdminController {
                                                       @PathVariable Long studentId) {
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" + requestId + "] is about to process request to check if student is on probation");
 
         // find student from repo using student id
@@ -214,9 +191,7 @@ public class AdminController {
         //verify if student exist, if not throw error
         if (optionalStudent.isEmpty()) {
             log.info("[ " + requestId + " ] request to get student failed, student cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+           
             return new ResponseEntity<String>("Student can not be found", HttpStatus.BAD_REQUEST);
         }
 
@@ -228,7 +203,6 @@ public class AdminController {
         log.info("Is student with ID: " + studentId + " on probation? - " + isOnProbation);
 
         return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body("Is student with ID: " + studentId + " on probation? - " + isOnProbation);
     }
 
@@ -239,7 +213,6 @@ public class AdminController {
                                      @RequestBody AddCourseModel addCourseModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to add a course");
 
         // create a new instance of the course
@@ -271,7 +244,6 @@ public class AdminController {
                 + ", resulted in: " + addCourseResponse);
 
         return (ResponseEntity<?>) ResponseEntity.status(addCourseResponse.getStatusCode())
-                .contentType(MediaType.valueOf("application/json"))
                 .body(addCourseResponse.getBody());
     }
 
@@ -283,7 +255,6 @@ public class AdminController {
                                             @RequestBody AddCourseModel addCourseModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to edit course with id " + courseId);
 
         // find course by id
@@ -293,10 +264,6 @@ public class AdminController {
         if(optionalCourse.isEmpty()){
 
             log.info("[ " + requestId + " ] request to edit course detail failed, course cannot be found");
-
-            status = 400;
-
-            response.setStatus(status);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course cannot be found");
 
@@ -339,7 +306,6 @@ public class AdminController {
         log.info("[ " + requestId + " ] request to edit course with ID: " + courseId + ", resulted in:- " + addCourseResponse);
 
         return ResponseEntity.status(addCourseResponse.getStatusCode())
-                .contentType(MediaType.valueOf("application/json"))
                 .body(addCourseResponse.getBody());
 
     }
@@ -355,7 +321,6 @@ public class AdminController {
                                          @RequestParam(value = "sortDir", required = false, defaultValue = "desc") String sortDir){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get all courses");
 
         // set sorting and pagination
@@ -367,15 +332,9 @@ public class AdminController {
 
         //check if courseList, if yes throw error
         if(courseList.isEmpty()){
-            List<Error> errors =
-                    Collections.singletonList(new Error("No courses available"));
-
             log.info("[ " + requestId + " ] request to get all courses failed, no courses available.");
 
-            status = 404;
-            response.setStatus(status);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .contentType(MediaType.valueOf("application/json")).body("No course available");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No course available");
         }
 
         // create a new list of courses with type as course response dto
@@ -387,11 +346,9 @@ public class AdminController {
         //set pagination
         Page<CourseResponseDto> pagedCourses = new PageImpl<>(courses,pageable,courses.size());
 
-        response.setStatus(status);
-
         log.info("[ " + requestId + " ] request to get all courses is successful");
+        
         return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body(isPaged ? pagedCourses : courses);
 
     }
@@ -402,7 +359,6 @@ public class AdminController {
                                       @PathVariable Long courseId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get course with ID " + courseId);
 
         //get course from repo using id
@@ -412,29 +368,24 @@ public class AdminController {
         if (optionalCourse.isEmpty()){
 
             log.info("[ " + requestId + " ] request to get course failed, course cannot be found");
-
-            status = 400;
-
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course cannot be found");
         }
 
         //unwrap course from optional
         Course course = optionalCourse.get();
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to get course with ID: " + courseId + " is successful");
         return ResponseEntity.status(HttpStatus.OK).body(course);
     }
 
+    
     //is course cancelled
     @GetMapping(value = "api/v1/admin/courses/{courseId}/iscancelled", produces = "application/json")
     public ResponseEntity<?> isCourseCancelled (HttpServletResponse response, HttpServletRequest request,
                                                 @PathVariable Long courseId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to check if course with ID: "
                 + courseId + " is cancelled.");
 
@@ -445,10 +396,6 @@ public class AdminController {
         if (optionalCourse.isEmpty()){
 
             log.info("[ " + requestId + " ] request to get course failed, course cannot be found");
-
-            status = 400;
-
-            response.setStatus(status);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course cannot be found");
         }
@@ -462,10 +409,10 @@ public class AdminController {
         log.info("Is course with ID: " + courseId + " cancelled? - " + isCancelled);
 
         return (ResponseEntity<?>) ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("application/json"))
                 .body("Is course with ID: " + courseId + " cancelled? - " + isCancelled);
 
     }
+    
 
     //Add a professor
     @PostMapping(value = "api/v1/admin/professors/add", produces = "application/json")
@@ -473,7 +420,6 @@ public class AdminController {
                                         @RequestBody AddProfessorModel addProfessorModel){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to add professor");
 
         //create an instance of professor and set the attributes
@@ -490,7 +436,6 @@ public class AdminController {
         // add professor to repository
         ResponseEntity<?> addProfessorResponse = professorService.addProfessor(professor, requestId);
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to add professor resulted in: " + addProfessorResponse);
 
         return ResponseEntity.status(addProfessorResponse.getStatusCode())
@@ -504,7 +449,6 @@ public class AdminController {
                                            @RequestParam(required = false) Double salary){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to edit professor's salary");
 
         // find professor by id
@@ -513,10 +457,7 @@ public class AdminController {
         //check if professor is empty, if yes throw exception
         if(optionalProfessor.isEmpty()){
             log.info("[ " + requestId + " ] request to edit professor salary failed, professor cannot be found");
-            status = 400;
-
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professor cannot be found.");
         }
 
@@ -537,7 +478,6 @@ public class AdminController {
         ProfessorResponseDto responseDto = null;
         responseDto = professor.toResponse();
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to edit professor with id "
                 + professorId + "'s salary resulted in: " + addProfessorResponse);
 
@@ -555,7 +495,6 @@ public class AdminController {
                                            @RequestParam Long courseId) {
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" + requestId + "] is about to process request to assign course to professor with id " + professorId);
 
         // find professor by id
@@ -564,9 +503,7 @@ public class AdminController {
         //check if professor is empty, if yes throw exception
         if (optionalProfessor.isEmpty()) {
             log.info("[ " + requestId + " ] request to assign course to professor failed, professor cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Professor cannot be found.");
 
         }
@@ -580,9 +517,7 @@ public class AdminController {
         //check if course is empty, if yes throw exception
         if (optionalCourse.isEmpty()) {
             log.info("[ " + requestId + " ] request to assign course to professor failed, course cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Course cannot be found.");
 
         }
@@ -605,8 +540,6 @@ public class AdminController {
         //add updated course to repo
         ResponseEntity<?> addCourseResponse = courseService.addEditedCourse(course, requestId);
 
-        response.setStatus(status);
-
         log.info("[ " + requestId + " ] request to assign course to professor with id " + professorId
                 + " resulted in: " + addProfessorResponse);
 
@@ -623,7 +556,6 @@ public class AdminController {
                                      @PathVariable Long professorId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get professor with ID: "
                 + professorId);
 
@@ -633,9 +565,7 @@ public class AdminController {
         // check if prof is empty, if yes throw error
         if (optionalProfessor.isEmpty()){
             log.info("[ " + requestId + " ] request to get professor failed, professor cannot be found");
-            status = 400;
-            response.setStatus(status);
-
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Professor cannot be found");
         }
@@ -643,7 +573,6 @@ public class AdminController {
         //unwrap prof from optional
         Professor professor = optionalProfessor.get();
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to get professor with ID "
                 + professorId + " is successful");
 
@@ -662,7 +591,6 @@ public class AdminController {
                                          @RequestParam(value = "sortDir", required = false, defaultValue = "desc") String sortDir){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get all professors");
 
         // setting sorting and pagination
@@ -674,13 +602,7 @@ public class AdminController {
 
         // check prof list, if empty throw error
         if(professorList.isEmpty()){
-            List<Error> errors =
-                    Collections.singletonList(new Error("No professors available"));
-
             log.info("[ " + requestId + " ] request to get all professors failed, no professor available.");
-
-            status = 404;
-            response.setStatus(status);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("No professor available");
@@ -695,8 +617,6 @@ public class AdminController {
         //setting pagination
         Page<ProfessorResponseDto> pagedCourses = new PageImpl<>(professors,pageable,professors.size());
 
-        response.setStatus(status);
-
         return ResponseEntity.status(HttpStatus.OK)
                 .body(isPaged ? pagedCourses : professors);
     }
@@ -708,7 +628,6 @@ public class AdminController {
                                    @PathVariable Long professorId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get all courses assigned to professor with ID: "
                 + professorId);
 
@@ -719,9 +638,6 @@ public class AdminController {
         if (optionalProfessor.isEmpty()){
 
             log.info("[ " + requestId + " ] request to get all courses assigned to professor failed, professor cannot be found.");
-
-            status = 404;
-            response.setStatus(status);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Professor cannot be found.");
@@ -738,9 +654,6 @@ public class AdminController {
 
             log.info("[ " + requestId + " ] request to get all courses assigned to professor failed, no course has been assigned to professor");
 
-            status = 404;
-            response.setStatus(status);
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("No course has been assigned to professor");
         }
@@ -751,7 +664,6 @@ public class AdminController {
         // add prof courses from professorCourses to new list of courses of type response dto
         professorCourses.forEach(course -> courses.add(course.toResponse()));
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to get courses assigned to professor with ID: "
                 + professorId + " is successful");
 
@@ -766,7 +678,6 @@ public class AdminController {
                                                     @PathVariable Long professorId){
 
         String requestId = request.getSession().getId();
-        int status = 200;
         log.info("[" +requestId + "] is about to process request to get salary payable of professor with ID: "
                 + professorId);
 
@@ -778,9 +689,6 @@ public class AdminController {
 
             log.info("[ " + requestId + " ] request to get all courses assigned to professor failed, professor cannot be found.");
 
-            status = 404;
-            response.setStatus(status);
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Professor cannot be found.");
         }
@@ -790,7 +698,6 @@ public class AdminController {
 
         Double salaryPayable = professorService.professorSalaryPayable(professor);
 
-        response.setStatus(status);
         log.info("[ " + requestId + " ] request to get salary payable of professor with ID: "
                 + professorId + " result in: " + salaryPayable);
 
